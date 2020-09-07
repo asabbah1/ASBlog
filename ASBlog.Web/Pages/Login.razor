@@ -1,0 +1,91 @@
+﻿@page "/Login"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject IUserService userService
+<Breadcrumb Title="Login" />
+
+
+<section class="login-page section-b-space">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h3>Login</h3>
+                <div class="theme-card">
+                    <EditForm class="theme-form" Model="@loginRq" OnValidSubmit="@ValidateUser">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input class="form-control" @bind="loginRq.Email" placeholder="Email" required="" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="review">Password</label>
+                            <input class="form-control" @bind="loginRq.Password" placeholder="Enter your password" required=""
+                                   type="password">
+                        </div>
+                        <input type="submit" class="btn primary-btn btn-default radius-0" value="Login" />
+                        <br/>
+                        <span class="text-danger">@LoginErrorMessage</span>
+                    </EditForm>
+                </div>
+            </div>
+            <div class="col-lg-6 right-login">
+                <h3>New Customer</h3>
+                <div class="theme-card authentication-right">
+                    <h6 class="title-font">Create An Account</h6>
+                    <p>
+                        Sign up for a free account at our Blog. Registration is quick and easy. It allows you to be able
+                        to write your stories and publish it.
+                    </p><a class="btn primary-btn btn-default radius-0"
+                           href="/Register">
+                        Create
+                        an Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@code {
+
+    private LoginRq loginRq;
+    public string LoginErrorMessage { get; set; }
+    ClaimsPrincipal claimsPrincipal;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        loginRq = new LoginRq();
+
+        // if user already logged in
+        claimsPrincipal = (await authenticationStateTask).User;
+
+        if (claimsPrincipal.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task<bool> ValidateUser()
+    {
+
+        // Call Login API
+
+        var loginRs = await userService.LoginAsync(loginRq);
+
+        if (loginRs.status == 1)
+        {
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(loginRs);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            LoginErrorMessage = "Invalid username or password";
+        }
+
+        return await Task.FromResult(true);
+    }
+}

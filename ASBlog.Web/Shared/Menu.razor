@@ -1,0 +1,63 @@
+﻿@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <nav>
+                <a class="d-inline-block m-r-auto" href="/">
+                    <img alt="" class="img-fluid"
+                         src="/assets/images/logo.png">
+                </a>
+                <div class="responsive-btn">
+                    <a class="toggle-nav" href="#">
+                        <i aria-hidden="true"
+                           class="fa fa-bars"></i>
+                    </a>
+                </div>
+                <div class="navbar m-l-auto " id="togglebtn">
+                    <div class="responsive-btn">
+                        <h5 class="btn-back">back</h5>
+                    </div>
+                    <ul class="main-menu">
+                        <li>
+                            <a href="#">home</a>
+                        </li>
+
+                        <li>
+                            <a href="#">About</a>
+                        </li>
+
+                        <AuthorizeView>
+                            <Authorized>
+                                <li>
+                                    <a href="#">Hello, Mr. @context.User.Identity.Name</a>
+                                </li>
+                                <li>
+                                    <a @onclick="(() => Logout())" href="/">Logout</a>
+                                </li>
+                            </Authorized>
+                            <NotAuthorized>
+                                <li>
+                                    <a href="/Login">Login</a>
+                                </li>
+
+                                <li>
+                                    <a href="/Register">Register</a>
+                                </li>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@code {
+    public async Task Logout()
+    {
+        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+        NavigationManager.NavigateTo("/",true);
+    }
+}

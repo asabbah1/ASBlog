@@ -1,0 +1,94 @@
+﻿@page "/"
+@inject IBlogService blogService
+@inject NavigationManager NavigationManager
+
+<Breadcrumb Title="" />
+
+@if (CanCreate)
+{
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="title title2 title-inner">
+                    <div class="main-title">
+                        <h2 class="font-primary borders text-center main-text m-b-0">
+                            <span class="text-uppercase">Share Your Story</span>
+                        </h2>
+                    </div>
+                </div>
+                <div class="shadow-sm p-5 shadow-showcase text-center ">
+                    <a href="/Story/Form" class="btn primary-btn btn-default radius-0"> Create New Story</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- section start -->
+<section class="agency blog blog-sec">
+    <div class="container no-side">
+        <div class="row">
+            @foreach (var item in Stories)
+            {
+                <div class="col-xl-4 col-md-6">
+                    <div class="blog-agency">
+                        <div class="blog-contain">
+                            <img alt="" class="img-fluid" src="/assets/images/@item.headerImage">
+                            <div class="img-container center-content">
+                                <div class="center-content">
+                                    <div class="blog-info">
+                                        <div class="m-b-20">
+                                            <div class="center-text">
+                                                <i aria-hidden="true" class="fa fa-clock-o m-r-10"></i>
+                                                <h6 class="m-r-25 font-blog">@item.createdDate.ToString("MMM d, yyyy")</h6>
+                                                <i aria-hidden="true" class="fa fa-user m-r-10"></i>
+                                                <h6 class="font-blog">@item.user</h6>
+                                            </div>
+                                        </div>
+                                        <h5 class="blog-head font-600">@item.title</h5>
+                                        <p class="para2">
+                                           @item.content
+                                        </p>
+                                        <div class="btn-bottom m-t-20">
+                                            <a class="text-uppercase" href="/Story/@item.id">read more</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- section end -->
+
+@code {
+    public List<StoryRs> Stories { get; set; }
+
+    public bool CanCreate { get; set; }
+
+    ClaimsPrincipal claimsPrincipal;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Stories = new List<StoryRs>();
+
+        Stories = await blogService.GetAllStoriesAsync();
+
+        claimsPrincipal = (await authenticationStateTask).User;
+
+        if (claimsPrincipal.Identity.IsAuthenticated)
+        {
+            if (claimsPrincipal.IsInRole("Admin") || claimsPrincipal.IsInRole("Writer"))
+            {
+                CanCreate = true;
+            }
+        }
+
+    }
+}

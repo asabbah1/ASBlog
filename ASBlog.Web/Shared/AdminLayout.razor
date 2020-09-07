@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main">
+
+    <div class="content px-4">
+        @Body
+    </div>
+</div>

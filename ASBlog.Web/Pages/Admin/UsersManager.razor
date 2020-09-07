@@ -1,0 +1,46 @@
+﻿@page "/Admin/Users"
+@inject IUserService _userService
+
+
+<h1>Users</h1>
+
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in users)
+            {
+            <tr>
+                <td>@item.id</td>
+                <td>@item.email</td>
+                <td>@item.firstName</td>
+                <td>@item.lastName</td>
+                <td>@string.Join(",", item.roles)</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<UserRs> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await _userService.GetAllUsersAsync();
+    }
+}

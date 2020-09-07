@@ -1,0 +1,61 @@
+﻿@page "/"
+@namespace ASBlog.Web.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASBlog</title>
+    <base href="~/" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="~/assets/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/inner-page.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/fontawesome.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/themify.css" rel="stylesheet" type="text/css">
+    <link href="~/assets/css/flaticon.css" rel="stylesheet" type="text/css">
+</head>
+<body class="agency " data-offset="50" data-spy="scroll" data-target=".navbar">
+
+    <div class="loader-wrapper">
+        <div class="loader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <app>
+        <component type="typeof(App)" render-mode="Server" />
+    </app>
+
+
+    <script src="~/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="~/assets/js/popper.min.js"></script>
+    <script src="~/assets/js/bootstrap.js"></script>
+    <script src="~/assets/js/main.js"></script>
+    <script>
+        function collapSection() {
+            var x = document.getElementById("togglebtn");
+            if ((x.style.opacity === "0") && (x.style.visibility === "hidden")) {
+                x.style.opacity = "1";
+                x.style.visibility = "visible";
+            } else {
+                x.style.opacity = "0";
+                x.style.visibility = "hidden";
+            }
+        }
+    </script>
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>

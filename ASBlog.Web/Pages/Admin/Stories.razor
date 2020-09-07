@@ -1,0 +1,46 @@
+﻿@page "/Admin/Stories"
+@inject IBlogService _blogService
+
+
+<h1>Stories</h1>
+
+
+@if (stories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Created Date</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in stories)
+            {
+                <tr>
+                    <td>@item.id</td>
+                    <td>@item.title</td>
+                    <td>@item.user</td>
+                    <td>@item.createdDate.ToShortDateString()</td>
+                    <td><a href="/Story/Form/@item.id"class="text-primary">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<StoryRs> stories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        stories = await _blogService.GetAllStoriesAsync();
+    }
+}

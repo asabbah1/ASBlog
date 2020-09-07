@@ -1,0 +1,113 @@
+﻿@page "/Story/Form"
+@page "/Story/Form/{storyId}"
+
+@inject IBlogService blogService
+@inject NavigationManager NavigationManager
+
+<Breadcrumb Title="Create New Story" />
+
+<section class="register-page section-b-space">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>create new story</h3>
+                <div class="theme-card">
+                    <EditForm Model="@Story" OnValidSubmit="@AddUpdateStory" class="theme-form">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <label>Title</label>
+                                <input class="form-control" @bind="Story.title" placeholder="Title" required="" type="text">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <label>Content</label>
+                                <textarea class="form-control" @bind="Story.content" placeholder="Content" required="" rows="6" />
+                            </div>
+                            @if (string.IsNullOrEmpty(StoryId))
+                            {
+                                <input type="submit" class="btn primary-btn btn-default radius-0" value="Create" />
+                            }
+                            else
+                            {
+                                <input type="submit" class="btn primary-btn btn-default radius-0" value="Update" />
+                            }
+
+                        </div>
+                        <span class="text-success">@Message</span>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+
+    [Parameter]
+    public string StoryId { get; set; }
+
+    ClaimsPrincipal claimsPrincipal;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public StoryRq Story { get; set; }
+
+    public string Message { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        claimsPrincipal = (await authenticationStateTask).User;
+
+        if (!claimsPrincipal.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/Login", true);
+        }
+
+        Story = new StoryRq();
+
+        if (!string.IsNullOrEmpty(StoryId))
+        {
+            var UpdateStory = await blogService.GetStory(Convert.ToInt32(StoryId));
+
+            Story.title = UpdateStory.title;
+            Story.content = UpdateStory.content;
+        }
+    }
+
+
+
+    private async Task<bool> AddUpdateStory()
+    {
+        List<string> headerImgs = new List<string>()
+        {
+            "header1.jpg",
+            "header2.jpg",
+            "header3.jpg"
+        };
+
+        if (!string.IsNullOrEmpty(StoryId))
+        {
+            await blogService.UpdateStory(Convert.ToInt32(StoryId), Story);
+
+            NavigationManager.NavigateTo($"/Story/{StoryId}", true);
+        }
+        else
+        {
+            var random = new Random();
+            int index = random.Next(headerImgs.Count);
+
+            Story.headerImage = headerImgs[index];
+
+            await blogService.CreateStory(Story);
+
+            NavigationManager.NavigateTo("/", true);
+        }
+
+        return await Task.FromResult(true);
+    }
+
+}

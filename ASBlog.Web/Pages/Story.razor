@@ -1,0 +1,255 @@
+﻿@page "/Story/{storyId:int}"
+@inject IBlogService blogService
+@inject NavigationManager NavigationManager
+
+    <Breadcrumb Title="@StoryDetails.title" />
+
+<section class="agency blog-sec blog-sidebar single_blog_item">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="blog-block m-b-20">
+                    <div class="blog-box">
+                        <div class="overflow-hidden">
+                            <img alt="blog" class="img-fluid blur-up lazyload "
+                                 src="/assets/images/storyheader.jpg">
+                        </div>
+                    </div>
+                </div>
+                <div class="blog-text">
+                    <h6>@StoryDetails.createdDate.ToString("MMM d, yyyy")</h6><a href="#">
+                        <h3 class="blog-head">@StoryDetails.title</h3>
+                    </a>
+                    <div class="blog-divider"></div>
+                    <div class="blog-description">
+                        <p>
+                            @StoryDetails.content
+                        </p>
+                        <h5>@StoryDetails.user</h5>
+                        <h5 class="pull-right">
+                            @StoryDetails.comments.Count.ToString() <i class="fa fa-comments-o"></i>
+                        </h5>
+                    </div>
+                </div>
+                <!-- Comment Sec Start -->
+
+                <h3 class="page-header-comment">Comments :</h3>
+                <div class="comment-list blog_comment">
+                    @if (StoryDetails.comments.Count > 0)
+                    {
+                        foreach (var item in StoryDetails.comments)
+                        {
+                            <div class="comment_sec">
+                                <article class="row">
+                                    <div class="col-12">
+                                        <div class="blog_center">
+                                            <div>
+                                                <figure class="thumbnail">
+                                                    <img alt="" src="/assets/images/comment.png">
+                                                </figure>
+                                            </div>
+                                            <div class="blog_user arrow left">
+                                                <div class="panel-body">
+                                                    <div class="text-left">
+                                                        <div class="comment-user">
+                                                            <i class="fa fa-user"></i><h6> @item.name </h6>
+                                                        </div>
+                                                        <div class="comment-date">
+                                                            <i class="fa fa-clock-o"></i><h6>
+                                                                @item.createdDate.ToString("MMM d, yyyy")
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class="comment-post">
+                                                        <p>
+                                                            @item.content
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        }
+                    }
+
+                </div>
+                <!-- Comment Sec End -->
+                <div class="quote_2 comment_form_sec">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 quote_form">
+                                <hr />
+                                <h3 class="page-header-comment mb-4">Leave you comment :</h3>
+                                <EditForm Model="@commentRq">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label>Name :</label>
+                                            <input class="form-control" @bind="commentRq.name" placeholder="Enter Your Name" required=""
+                                                   type="text">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="inputEmail4">Email :</label>
+                                            <input class="form-control" @bind="commentRq.email" placeholder="Enter Your Email"
+                                                   required="" type="email">
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="exampleTextarea">Message :</label>
+                                            <textarea class="form-control msg_coment" @bind="commentRq.content" placeholder="Leave a Comment"
+                                                      required="" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <a class="btn btn-default primary-btn m-t-20 radius-0" @onclick="(()=> AddComment())">
+                                        Post Comment
+                                        <span class="con_btn_eff"></span>
+                                    </a>
+                                </EditForm>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="blog-side">
+                    @if (CanEdit)
+                    {
+                        <div>
+                            <h5 class="blog-title">Informations</h5>
+                            <div class="sidebar-container borders">
+                                <ul class="sidebar-list">
+                                    <li class="d-flex">
+                                        <a href="/Story/Form/@StoryId">
+                                            <i aria-hidden="true" class="fa fa-angle-right m-r-15"></i>Edit Story
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        <h5 class="blog-title">popular posts</h5>
+                        <div class="sidebar-container">
+                            <div class="post-container d-flex">
+                                <div class="w-35 m-r-25">
+                                    <img alt="" class="img-fluid" src="/assets/images/inner-page/side-img/1.jpg">
+                                    <div class="badge">2020</div>
+                                </div>
+                                <div>
+                                    <h5 class="post-head">lorem ipsum</h5>
+                                    <h6 class="date">nov 22, 2020</h6>
+                                </div>
+                            </div>
+                            <div class="post-container d-flex">
+                                <div class="w-35 m-r-25">
+                                    <img alt="" class="img-fluid" src="/assets/images/inner-page/side-img/2.jpg">
+                                    <div class="badge badge-red">2020</div>
+                                </div>
+                                <div>
+                                    <h5 class="post-head">lorem ipsum</h5>
+                                    <h6 class="date">nov 22, 2020</h6>
+                                </div>
+                            </div>
+                            <div class="post-container d-flex">
+                                <div class="w-35 m-r-25">
+                                    <img alt="" class="img-fluid" src="/assets/images/inner-page/side-img/3.jpg">
+                                    <div class="badge badge-yellow">2020</div>
+                                </div>
+                                <div>
+                                    <h5 class="post-head">lorem ipsum</h5>
+                                    <h6 class="date">nov 22, 2020</h6>
+                                </div>
+                            </div>
+                            <div class="post-container d-flex">
+                                <div class="w-35 m-r-25">
+                                    <img alt="" class="img-fluid" src="/assets/images/inner-page/side-img/4.jpg">
+                                    <div class="badge badge-blue">2020</div>
+                                </div>
+                                <div>
+                                    <h5 class="post-head">lorem ipsum</h5>
+                                    <h6 class="date">nov 22, 2020</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-container">
+                        <h5 class="blog-title">newsletter</h5>
+                        <div class="newsletter text-center form">
+                            <div class="form-group mb-0">
+                                <input class="form-control" placeholder="enter email" type="text">
+                                <a href="#">
+                                    <i aria-hidden="true" class="fa fa-paper-plane"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- section end -->
+
+@code {
+
+    [Parameter]
+    public int StoryId { get; set; }
+
+    public StoryRs StoryDetails { get; set; }
+
+    public CommentRq commentRq { get; set; }
+
+    ClaimsPrincipal claimsPrincipal;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+
+    public bool CanEdit { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        StoryDetails = new StoryRs();
+        commentRq = new CommentRq();
+        StoryDetails = await blogService.GetStory(StoryId);
+
+        if (StoryDetails == null)
+        {
+            NavigationManager.NavigateTo("/NotFound");
+        }
+
+        commentRq.postId = StoryId;
+
+
+        claimsPrincipal = (await authenticationStateTask).User;
+
+        if (claimsPrincipal.Identity.IsAuthenticated)
+        {
+            if (claimsPrincipal.IsInRole("Admin") || claimsPrincipal.IsInRole("Writer"))
+            {
+                if (StoryDetails.userEmail == claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier))
+                {
+                    CanEdit = true;
+                }
+            }
+        }
+
+
+    }
+
+    private async Task AddComment()
+    {
+        await blogService.AddComment(commentRq);
+
+        commentRq = new CommentRq();
+
+        StoryDetails = await blogService.GetStory(StoryId);
+
+
+
+        StateHasChanged();
+    }
+
+
+}

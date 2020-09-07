@@ -1,0 +1,100 @@
+﻿@page "/Register"
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IUserService userService
+
+<Breadcrumb Title="Register" />
+
+<section class="register-page section-b-space">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>create account</h3>
+                <div class="theme-card">
+                    <EditForm Model="@registerRq" OnValidSubmit="@RegisterUser" class="theme-form">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label>First Name</label>
+                                <input class="form-control" @bind="registerRq.FirstName" placeholder="First Name" required="" type="text">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Last Name</label>
+                                <input class="form-control" @bind="registerRq.LastName" placeholder="Last Name" required=""
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <label>email</label>
+                                <input class="form-control" @bind="registerRq.Email" placeholder="Email" required="" type="text">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Password</label>
+                                <input class="form-control" @bind="registerRq.Password" placeholder="Enter your password"
+                                       required="" type="password">
+                            </div>
+                            <input type="submit" class="btn primary-btn btn-default radius-0" value="create Account" />
+                        </div>
+                        <span class="text-danger">@Message</span>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private RegisterRq registerRq;
+
+    ClaimsPrincipal claimsPrincipal;
+
+    public string Message { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        registerRq = new RegisterRq();
+
+        // if user already logged in
+        claimsPrincipal = (await authenticationStateTask).User;
+
+        if (claimsPrincipal.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+    }
+
+    private async Task<bool> RegisterUser()
+    {
+
+        // Call Login API
+
+        var registerRs = await userService.RegisterAsync(registerRq);
+
+        if (registerRs.status == 1)
+        {
+            var loginRq = new LoginRq()
+            {
+                Email = registerRq.Email,
+                Password = registerRq.Password
+            };
+
+            var loginRs = await userService.LoginAsync(loginRq);
+
+            await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(loginRs);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            Message = registerRs.errorMessage;
+        }
+
+        return await Task.FromResult(true);
+    }
+}
